@@ -1,0 +1,6 @@
+[book]
+authors = ["oka"]
+language = "ja"
+multilingual = false
+src = "src"
+title = "mikan-book"
