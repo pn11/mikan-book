@@ -26,7 +26,7 @@ $HOME/osbook/devenv/run_qemu.sh BOOTX64.EFI
 
 まごころこめて手打ちした binary が起動すると感慨もひとしお。
 
-![](image/hello-workld.jpg)
+![](image/hello-world.jpg)
 
 ## C 言語で hello world
 
