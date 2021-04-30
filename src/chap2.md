@@ -10,7 +10,7 @@ $HOME/osbook/devenv/run_qemu.sh $HOME/edk2/Build/MikanLoaderX64/DEBUG_CLANG38/X6
 
 を実行すると、
 
-![](hello-mikan-world.jpg)
+![](image/hello-mikan-world.jpg)
 
 が表示される。
 
