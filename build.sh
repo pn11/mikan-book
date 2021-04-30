@@ -1,1 +1,1 @@
-mdbook build --dest-dir docs
+mdbook build
