@@ -6,7 +6,9 @@
 
 - [uchan-nos/mikanos-build: Build and run scripts for MikanOS](https://github.com/uchan-nos/mikanos-build)
 
-home directory に `edk2` と `osbook` という directory がある状態になる。
+home directory に `edk2` と `osbook` という directories がある状態になる[^osbook]。
+
+[^osbook]: `osbook` directory は本だと `workspace` となっているが、どこでも良いとなっているので、分かり易い repository の方に合わせた。
 
 ## VcXsrv
 

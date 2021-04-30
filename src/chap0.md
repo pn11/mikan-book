@@ -6,7 +6,6 @@ WSL2 のメモリ枯渇問題については以下の記事のように対処す
 
 - [WSL2によるホストのメモリ枯渇を防ぐための暫定対処 - Qiita](https://qiita.com/yoichiwo7/items/e3e13b6fe2f32c4c6120)
 
-
 RAM 4 GB の人権無視マシンを使っているので、 WSL への割り当ては 2 GB とした。 WSL2 再起動後に `htop` すると 2 GB になっていることが分かる。
 
 ![fig](image/htop.jpg)
