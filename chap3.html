@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>第1章 - mikan-book</title>
+        <title>第3章 - mikan-book</title>
         
         
 
@@ -102,7 +102,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">表紙</a></li><li class="chapter-item expanded "><a href="devenv.html"><strong aria-hidden="true">1.</strong> 環境構築</a></li><li class="chapter-item expanded "><a href="chap0.html"><strong aria-hidden="true">2.</strong> 第0章</a></li><li class="chapter-item expanded "><a href="chap1.html" class="active"><strong aria-hidden="true">3.</strong> 第1章</a></li><li class="chapter-item expanded "><a href="chap2.html"><strong aria-hidden="true">4.</strong> 第2章</a></li><li class="chapter-item expanded "><a href="chap3.html"><strong aria-hidden="true">5.</strong> 第3章</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">表紙</a></li><li class="chapter-item expanded "><a href="devenv.html"><strong aria-hidden="true">1.</strong> 環境構築</a></li><li class="chapter-item expanded "><a href="chap0.html"><strong aria-hidden="true">2.</strong> 第0章</a></li><li class="chapter-item expanded "><a href="chap1.html"><strong aria-hidden="true">3.</strong> 第1章</a></li><li class="chapter-item expanded "><a href="chap2.html"><strong aria-hidden="true">4.</strong> 第2章</a></li><li class="chapter-item expanded "><a href="chap3.html" class="active"><strong aria-hidden="true">5.</strong> 第3章</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -170,51 +170,91 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#第1章" id="第1章">第1章</a></h1>
-<p>binary editor で EFI file を作って QEMU で動かすのを目標にする。 USB メモリとかは面倒なのでやらない。けっこう進んだらやってみてもよいけど。</p>
-<h2><a class="header" href="#efi-ファイル作成" id="efi-ファイル作成">EFI ファイル作成</a></h2>
-<p>binary editor は本では okteta や  Binary Editor Bz が紹介されているが、 CLI で使える hexedit でやってみる。</p>
-<pre><code class="language-sh">sudo apt install hexedit
-touch BOOTX64.EFI
-hexedit BOOTX64.EFI
+                        <h1><a class="header" href="#第3章" id="第3章">第3章</a></h1>
+<h2><a class="header" href="#33-初めてのカーネル" id="33-初めてのカーネル">3.3 初めてのカーネル</a></h2>
+<p>p. 73 の手順で kernel file を作成する。これが初めての OS で、これまで動かしていたのは boot loader らしい。<br />
+kernel の情報は <code>readelf</code> で見れる (<code>-h</code> は header を表示する option)。</p>
+<pre><code class="language-sh">$ readelf -h kernel.elf
+ELF Header:
+  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00
+  Class:                             ELF64
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              EXEC (Executable file)
+  Machine:                           Advanced Micro Devices X86-64
+  Version:                           0x1
+  Entry point address:               0x101000
+  Start of program headers:          64 (bytes into file)
+  Start of section headers:          8928 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               64 (bytes)
+  Size of program headers:           56 (bytes)
+  Number of program headers:         4
+  Size of section headers:           64 (bytes)
+  Number of section headers:         14
+  Section header string table index: 12
 </code></pre>
-<p>打ち込んでいるところ</p>
-<p><img src="image/hexedit.jpg" alt="" /></p>
-<h2><a class="header" href="#qemu-で起動" id="qemu-で起動">QEMU で起動</a></h2>
-<p>本当は qemu の command を打たないといけないが、用意されている <a href="https://github.com/uchan-nos/mikanos-build/blob/master/devenv/run_qemu.sh">script</a> を使う。</p>
-<pre><code>$HOME/osbook/devenv/run_qemu.sh BOOTX64.EFI
+<p>kernel を boot loader で動かすには p. 80 の手順を実行する。なおこの部分は、4行目に <code>source edksetup.sh</code> が入るべきなのが抜けていると思われる。</p>
+<pre><code class="language-sh">$ $HOME/osbook/devenv/run_qemu.sh $HOME/edk2/Build/MikanLoaderX64/DEBUG_CLANG38/X64/Loader.efi $HOME/osbook/mikanos/kernel/kernel.elf
 </code></pre>
-<p>まごころこめて手打ちした binary が起動すると感慨もひとしお。</p>
-<p><img src="image/hello-world.jpg" alt="" /></p>
-<h2><a class="header" href="#c-言語で-hello-world" id="c-言語で-hello-world">C 言語で hello world</a></h2>
-<pre><code class="language-sh">cd $HOME/osbook/day01/c
-clang -target x86_64-pc-win32-coff -mno-red-zone -fno-stack-protector -fshort-wchar -Wall -c hello.c
-lld-link /subsystem:efi_application /entry:EfiMain /out:hello.efi hello.o
-$HOME/osbook/devenv/run_qemu.sh hello.efi
+<p>を実行すると以下のように表示された。</p>
+<p><img src="image/my-first-kernel.jpg" alt="" /></p>
+<p>terminal で QEMU モニタを以下のように動かせた。</p>
+<pre><code>(qemu) info registers
+RAX=0000000000100000 RBX=000000003effef18 RCX=0000000000000000 RDX=0000000000000000
+RSI=000000003feaca08 RDI=000000003feac9e0 RBP=000000003fea8850 RSP=000000003fea8850
+R8 =000000003fea87c4 R9 =000000003fb7b48f R10=000000003fbcd018 R11=fffffffffffffffc
+R12=000000003effe920 R13=000000003feac8d0 R14=000000003fea9110 R15=000000003e66573c
+RIP=0000000000101011 RFL=00000046 [---Z-P-] CPL=0 II=0 A20=1 SMM=0 HLT=1
+ES =0030 0000000000000000 ffffffff 00cf9300 DPL=0 DS   [-WA]
+CS =0038 0000000000000000 ffffffff 00af9a00 DPL=0 CS64 [-R-]
+SS =0030 0000000000000000 ffffffff 00cf9300 DPL=0 DS   [-WA]
+DS =0030 0000000000000000 ffffffff 00cf9300 DPL=0 DS   [-WA]
+FS =0030 0000000000000000 ffffffff 00cf9300 DPL=0 DS   [-WA]
+GS =0030 0000000000000000 ffffffff 00cf9300 DPL=0 DS   [-WA]
+LDT=0000 0000000000000000 0000ffff 00008200 DPL=0 LDT
+TR =0000 0000000000000000 0000ffff 00008b00 DPL=0 TSS64-busy
+GDT=     000000003fbee698 00000047
+IDT=     000000003f306018 00000fff
+CR0=80010033 CR2=0000000000000000 CR3=000000003fc01000 CR4=00000668
+DR0=0000000000000000 DR1=0000000000000000 DR2=0000000000000000 DR3=0000000000000000
+DR6=00000000ffff0ff0 DR7=0000000000000400
+EFER=0000000000000500
+FCW=037f FSW=0000 [ST=0] FTW=00 MXCSR=00001f80
+FPR0=0000000000000000 0000 FPR1=0000000000000000 0000
+FPR2=0000000000000000 0000 FPR3=0000000000000000 0000
+FPR4=0000000000000000 0000 FPR5=0000000000000000 0000
+FPR6=0000000000000000 0000 FPR7=0000000000000000 0000
+XMM00=00000000000000000000000000000000 XMM01=00000000000000000000000000000000
+XMM02=00000000000000000000000000000000 XMM03=00000000000000000000000000000000
+XMM04=00000000000000000000000000000000 XMM05=00000000000000000000000000000000
+XMM06=00000000000000000000000000000000 XMM07=00000000000000000000000000000000
+XMM08=00000000000000000000000000000000 XMM09=00000000000000000000000000000000
+XMM10=00000000000000000000000000000000 XMM11=00000000000000000000000000000000
+XMM12=00000000000000000000000000000000 XMM13=00000000000000000000000000000000
+XMM14=00000000000000000000000000000000 XMM15=00000000000000000000000000000000
+(qemu)
+(qemu) x /2i 0x101011
+0x0000000000101011:  jmp    0x101010
+0x0000000000101013:  int3
+(qemu) 
+(qemu) x /2i 0x101010
+0x0000000000101010:  hlt
+0x0000000000101011:  jmp    0x101010
 </code></pre>
-<p>でさっきと同様に Hello world が表示される。</p>
-<pre><code class="language-sh">cmp BOOTX64.EFI ~/osbook/day01/c/hello.efi
-</code></pre>
-<p>で binary を比較すると</p>
-<blockquote>
-<p>differ: byte 3, line 1</p>
-</blockquote>
-<p>と出た。 <code>hexedit</code> で開くとその他の場所もけっこう違っていた。</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="chap0.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="chap2.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
-                        
-                            <a rel="next" href="chap2.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
-                            </a>
                         
 
                         <div style="clear: both"></div>
@@ -224,15 +264,11 @@ $HOME/osbook/devenv/run_qemu.sh hello.efi
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a rel="prev" href="chap0.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="chap2.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
-                
-                    <a rel="next" href="chap2.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
-                    </a>
                 
             </nav>
 
