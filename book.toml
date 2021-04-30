@@ -4,3 +4,4 @@ language = "ja"
 multilingual = false
 src = "src"
 title = "mikan-book"
+description = "『ゼロからのOS自作入門』 (みかん本) <br>のやっていき記録"
